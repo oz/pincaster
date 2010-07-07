@@ -5,14 +5,15 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "pincaster"
-    gem.summary = %Q{TODO: one-line summary of your gem}
+    gem.summary = %Q{Pure ruby interface to Pincaster}
     gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "arnaud@cyprio.net"
+    gem.email = "oz@cyprio.net"
     gem.homepage = "http://github.com/oz/pincaster"
     gem.authors = ["Arnaud Berthomier"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_development_dependency "yajl-ruby", ">= 0.7.6"
+    gem.add_development_dependency "rest-client", ">= 1.6.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

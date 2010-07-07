@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+irb = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'
+libs = " -rubygems -r irb/completion"
+libs <<  " -r #{File.dirname(__FILE__) + '/../lib/pincaster.rb'}"
+puts "Loading pincaster gem"
+exec "#{irb} #{libs} --simple-prompt"
