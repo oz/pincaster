@@ -69,7 +69,6 @@ module Pincaster
       begin
         get 'system/ping.json'
       rescue => err
-        p err
         false
       end
     end
@@ -84,7 +83,6 @@ module Pincaster
       rescue RestClient::ServerBrokeConnection => died
         true
       rescue => err
-        p err
         false
       end
     end
@@ -98,7 +96,6 @@ module Pincaster
         response = get 'layers/index.json'
         response['layers'].map { |hash| Pincaster::Layer.new hash.merge(:server => self) }
       rescue => err
-        p err
         []
       end
     end

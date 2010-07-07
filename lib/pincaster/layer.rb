@@ -37,21 +37,34 @@ module Pincaster
     end
 
     # Delete a layer
+    # @param [String] layer name
+    # @param [Pincaster::Server] Pincaster::Server instance
+    # @return [Hash]
     def self.delete(name, server)
       server.delete "layers/#{name}.json"
     end
 
-    # Delete a layer
+    # Delete this layer
     #
     # @return [TrueClass]  Layer deleted
     # @return [FalseClass] Failed to delete layer
     def delete
-      self.class.delete(@name, @server)
+      if response = self.class.delete(@name, @server)
+        return false unless response['status'] == 'deleted'
+        true
+      else
+        false
+      end
     end
 
     # Delete a layer, raises exception on error
     #
+    # @param [String] layer name
+    # @param [Pincaster::Server] Pincaster::Server instance
+    # @return [Hash]
+    #
     # @raises [Pincaster::LayerError] generic error
+    # @raises [Pincaster::NoSuchLayer] layer does not exist
     def self.delete!(name, server)
       response = nil
       begin
@@ -59,11 +72,12 @@ module Pincaster
       rescue RestClient::ResourceNotFound
         raise Pincaster::NoSuchLayer
       rescue => err
-        p err
         raise Pincaster::LayerError.new(response)
       end
+      response
     end
 
+    # Delete the layer, raises exception on error
     def delete!
       self.class.delete! @name, @server
     end
