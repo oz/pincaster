@@ -2,6 +2,13 @@
 
 module Pincaster
   class Layer
+
+    attr_reader :opts
+
+    def initialize(opts={})
+      @opts = opts
+    end
+
     # Register a new layer
     def self.register(name)
       raise "not implemented"
@@ -19,12 +26,6 @@ module Pincaster
     #
     # @raises [LayerError] Fail
     def self.delete!(name)
-      raise "not implemented"
-    end
-
-    # List layers
-    # @return [Array] List of layer names
-    def self.list
       raise "not implemented"
     end
   end

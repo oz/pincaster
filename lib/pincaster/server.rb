@@ -13,6 +13,52 @@ module Pincaster
       self.uri!
     end
 
+    # Send a GET HTTP query
+    #
+    # @param  [String] Path to query
+    # @param  [Hash]   RestClient options
+    # @return [Hash]   Parsed JSON output
+    def get(path, opts={})
+      http_query :get, uri + path, opts.merge(:accept => :json)
+    end
+
+    # Send a POST HTTP query
+    #
+    # @param  [String] Path to query
+    # @param  [Hash]   RestClient options
+    # @return [Hash]   Parsed JSON output
+    def post(path, opts={})
+      http_query :post, uri + path, opts.merge(:accept => :json)
+    end
+
+    # Send a DELETE HTTP query
+    #
+    # @param  [String] Path to query
+    # @param  [Hash]   RestClient options
+    # @return [Hash]   Parsed JSON output
+    def delete(path, opts={})
+      http_query :delete, uri + path, opts.merge(:accept => :json)
+    end
+
+    # Send a PUT HTTP query
+    #
+    # @param  [String] Path to query
+    # @param  [Hash]   RestClient options
+    # @return [Hash]   Parsed JSON output
+    def put(path, opts={})
+      http_query :put, uri + path, opts.merge(:accept => :json)
+    end
+
+    # Send an HTTP query to a URI, and parse the output as JSON
+    #
+    # @param [String, Symbol] HTTP verb: 'get', 'post', ...
+    # @param [#to_s]          URI to query
+    # @param [Hash]           RestClient options
+    # @return [Hash]
+    def http_query(verb, uri, opts)
+      JSON.parse RestClient.send(verb, uri.to_s, opts)
+    end
+
     # Ping server
     #
     # @return [FalseClass] Server does not ping
@@ -21,7 +67,7 @@ module Pincaster
     # @todo   Handle exceptions
     def ping
       begin
-        JSON.parse RestClient.get((uri + 'system/ping.json').to_s, {:accept => :json})
+        get 'system/ping.json'
       rescue => err
         p err
         false
@@ -34,10 +80,26 @@ module Pincaster
     # @todo   Handle exceptions
     def shutdown!
       begin
-        RestClient.post((uri + 'system/shutdown.json').to_s, {:accept => :json})
+        post 'system/shutdown.json'
+      rescue RestClient::ServerBrokeConnection => died
+        true
       rescue => err
         p err
         false
+      end
+    end
+
+    # List layers
+    #
+    # @return [Array] Array of Pincaster::Layer
+    # @todo   Handle exceptions
+    def layers
+      begin
+        response = get 'layers/index.json'
+        response['layers'].map { |hash| Pincaster::Layer.new hash.merge(:server => self) }
+      rescue => err
+        p err
+        []
       end
     end
 
