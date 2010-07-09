@@ -13,40 +13,18 @@ module Pincaster
       self.uri!
     end
 
-    # Send a GET HTTP query
+    # Define get/post/delete/put methods for Pincaster::Server.
+    # Their prototype is the following
     #
     # @param  [String] Path to query
     # @param  [Hash]   RestClient options
     # @return [Hash]   Parsed JSON output
-    def get(path, opts={})
-      http_query :get, uri + path, opts.merge(:accept => :json)
-    end
-
-    # Send a POST HTTP query
-    #
-    # @param  [String] Path to query
-    # @param  [Hash]   RestClient options
-    # @return [Hash]   Parsed JSON output
-    def post(path, opts={})
-      http_query :post, uri + path, opts.merge(:accept => :json)
-    end
-
-    # Send a DELETE HTTP query
-    #
-    # @param  [String] Path to query
-    # @param  [Hash]   RestClient options
-    # @return [Hash]   Parsed JSON output
-    def delete(path, opts={})
-      http_query :delete, uri + path, opts.merge(:accept => :json)
-    end
-
-    # Send a PUT HTTP query
-    #
-    # @param  [String] Path to query
-    # @param  [Hash]   RestClient options
-    # @return [Hash]   Parsed JSON output
-    def put(path, opts={})
-      http_query :put, uri + path, opts.merge(:accept => :json)
+    %w(get post delete put).each do |verb|
+      class_eval %Q(
+        def #{verb}(path, opts={})
+          http_query :#{verb}, uri + path, opts.merge(:accept => :json)
+        end
+      )
     end
 
     # Send an HTTP query to a URI, and parse the output as JSON
