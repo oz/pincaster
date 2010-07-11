@@ -1,8 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec/spec_helper'
 
 describe "Pincaster::Layer" do
   before(:all) do
-    @local_server = Pincaster::Server.new
+    @local_server = pincaster_server_instance
   end
 
   it "should instanciate cleanly" do
@@ -17,8 +17,15 @@ describe "Pincaster::Layer" do
     layer2.should be_a Pincaster::Layer
   end
 
+  it "should raise an exception when creating a layer that already exists" do
+    Pincaster::Layer.register 'foo', :server => @local_server
+    failing = lambda { Pincaster::Layer.register! 'foo', :server => @local_server }
+    failing.should raise_error Pincaster::LayerAlreadyExist
+    Pincaster::Layer.delete 'foo', :server => @local_server
+  end
+
   it "should delete a layer" do
-    Pincaster::Server.new.layers.first.delete.should be_true
+    @local_server.layers.first.delete.should be_true
   end
 
   it "should raise an exception when trying to create layers without a server" do

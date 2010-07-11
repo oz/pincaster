@@ -1,9 +1,9 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec/spec_helper'
 
 describe "Pincaster::Server" do
   before(:all) do
     @test_layer_name = 'pincaster_test'
-    @server = Pincaster::Server.new
+    @server = pincaster_server_instance
   end
 
   after(:all) do
@@ -20,7 +20,7 @@ describe "Pincaster::Server" do
 
   it "should compose a valid server URI" do
     @server.uri.should be_a URI::HTTP
-    @server.uri.to_s.should == 'http://localhost:4269/api/1.0/'
+    @server.uri.to_s.should == "#{@server.config.http_scheme}://#{@server.config.host}:#{@server.config.port}/api/#{@server.config.api_version}/"
   end
 
   it "should forget cached URI" do
@@ -31,12 +31,6 @@ describe "Pincaster::Server" do
 
   it "should respond to ping" do
     @server.ping.should be_true
-  end
-
-  # I can't fully test shutdown!... or the server would die. Do we have a
-  # safe x-platform way of restarting a service? :p *cough*
-  it "should respond to shutdown!" do
-    @server.respond_to?("shutdown!").should be_true
   end
 
   it "should provide a method for each HTTP verb" do
@@ -54,4 +48,11 @@ describe "Pincaster::Server" do
 
     layers.select { |layer| layer.name == @test_layer_name }.should_not be_empty
   end
+
+  # I can't fully test shutdown!... or the server would die. Do we have a
+  # safe x-platform way of restarting a service? :p *cough*
+  it "should respond to shutdown!" do
+    @server.respond_to?("shutdown!").should be_true
+  end
+
 end

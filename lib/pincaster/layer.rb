@@ -1,6 +1,7 @@
 require 'rest-client'
 
 class Pincaster::NoSuchLayer < Exception; end
+class Pincaster::LayerAlreadyExist < Exception; end
 class Pincaster::LayerError < Exception; end
 class Pincaster::NoServer < Exception; end
 
@@ -38,7 +39,10 @@ module Pincaster
     end
 
     # Register a new layer
+    # @param [String] Layer name
+    # @param [Hash]   Create options
     # @return [Pincaster::Layer]
+    # @raise [LayerError] when opt[:server] is missing
     def self.register(name, opts={})
       raise LayerError.new("no server set") unless opts[:server]
       response = opts[:server].post "layers/#{name}.json"
@@ -49,11 +53,35 @@ module Pincaster
       end
     end
 
+    # Register a new layer, with an exception if the layer already exist
+    # @param [String] Layer name
+    # @param [Hash]   Create options
+    # @return [Pincaster::Layer]
+    # @raise [LayerError] on errors
+    # @raise [LayerAlreadyExist] when layer already exists
+    def self.register!(name, opts={})
+      raise LayerError.new("no server set") unless opts[:server]
+      begin
+        response = opts[:server].post "layers/#{name}.json"
+        raise LayerError.new("no data") unless response || response['status'].nil?
+        raise LayerAlreadyExist.new(name) if response['status'] == 'existing'
+        Pincaster::Layer.new :name => name, :server => opts[:server]
+      rescue => err
+        raise LayerError.new err.to_s
+      end
+    end
+
     # Register a layer
     def register
       self.class.register @name, :server => @server
     end
     alias :save :register
+
+    # Register a layer
+    def register!
+      self.class.register! @name, :server => @server
+    end
+    alias :save! :register!
 
     # Delete a layer
     # @param [String] layer name
