@@ -31,6 +31,8 @@ end
 # Startup Pincaster daemon with an rspec config
 def startup_pincaster_daemon(config)
   Process.fork do
+    $stdout.close
+    $stderr.close
     Process.exec 'pincaster', config
   end
 end
