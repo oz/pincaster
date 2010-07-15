@@ -49,6 +49,10 @@ describe "Pincaster::Server" do
     layers.select { |layer| layer.name == @test_layer_name }.should_not be_empty
   end
 
+  it "should compact" do
+    @server.compact.should_not be_false
+  end
+
   # I can't fully test shutdown!... or the server would die. Do we have a
   # safe x-platform way of restarting a service? :p *cough*
   it "should respond to shutdown!" do

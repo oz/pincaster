@@ -65,6 +65,19 @@ module Pincaster
       end
     end
 
+    # Journal compaction
+    #
+    # @return [FalseClass] Error
+    # @return [HashClass] Server response to query
+    def compact
+      begin
+        post 'system/rewrite.json'
+      rescue => err
+        false
+      end
+      true
+    end
+
     # List layers
     #
     # @return [Array] Array of Pincaster::Layer
