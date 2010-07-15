@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 module Pincaster
   VERSION = '0.1'
 
-  autoload :Server, 'pincaster/server'
-  autoload :Layer, 'pincaster/layer'
+  autoload :Exception, 'pincaster/exception'
+  autoload :Server,    'pincaster/server'
+  autoload :Layer,     'pincaster/layer'
 end
