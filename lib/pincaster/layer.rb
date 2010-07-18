@@ -1,16 +1,19 @@
-require 'rest-client'
-
-class Pincaster::NoSuchLayer < Exception; end
-class Pincaster::LayerAlreadyExist < Exception; end
-class Pincaster::LayerError < Exception; end
-class Pincaster::NoServer < Exception; end
+require 'pincaster/exception'
 
 module Pincaster
   class Layer
 
-    @@accessors = %w(records geo_records server name type distance_accuracy latitude_accuracy longitude_accuracy bounds)
+    @@accessors = %w(records
+                     geo_records
+                     server
+                     name
+                     type
+                     distance_accuracy
+                     latitude_accuracy
+                     longitude_accuracy
+                     bounds)
     # Define accessors
-    @@accessors.each { |acs|    instance_eval "attr_accessor :#{acs}"  }
+    @@accessors.each { |acs| instance_eval "attr_accessor :#{acs}" }
 
     # DEBUG
     attr_accessor :opts
@@ -111,15 +114,15 @@ module Pincaster
     # @param [Pincaster::Server] Pincaster::Server instance
     # @return [Hash]
     #
-    # @raises [Pincaster::LayerError] generic error
-    # @raises [Pincaster::NoSuchLayer] layer does not exist
+    # @raises [Pincaster::LayerError]    generic error
+    # @raises [Pincaster::LayerNotFound] layer does not exist
     def self.delete!(name, server)
       response = nil
       begin
         raise "no server set" unless server
         response = server.delete "layers/#{name}.json"
       rescue RestClient::ResourceNotFound
-        raise Pincaster::NoSuchLayer
+        raise Pincaster::LayerNotFound
       rescue => err
         raise Pincaster::LayerError.new err.to_s
       end
